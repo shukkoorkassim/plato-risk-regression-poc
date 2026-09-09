@@ -1,0 +1,6 @@
+commit,component,message,files_changed,date
+f1a2b3c,payments,add promo-code engine and PROMO_CODES table,3,2026-08-21
+c4d5e6f,payments,charge tax on discounted subtotal (REQ-411),2,2026-08-22
+a7b8c9d,payments,show discount line on order overview,2,2026-08-23
+e4f5a6b,checkout,itemised tax display on overview (REQ-412),1,2026-08-18
+b1c2d3e,search,wire product search box into inventory page,1,2026-08-17

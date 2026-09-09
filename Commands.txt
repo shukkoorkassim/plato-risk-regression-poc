@@ -1,0 +1,27 @@
+cd $HOME\Desktop\risk-Agent\plato-risk-regression-poc
+
+python scripts/check_jira.py
+python scripts/check_changes.py
+
+python run_poc.py --report
+python run_poc.py --reset
+
+
+python .\dry_run.py  
+
+
+JIRA_LIVE  - Is a flag that I can toggle 
+
+CHANGE_LIVE
+
+features: project = KAN AND labels = "release-delta" AND labels = "feature"
+bug-fixes: … AND labels = "bugfix"
+Each issue's component comes from its labels; type is tagged feature / bugfix.
+
+-----------------------------------
+history from sprint retrospective 
+open source code 
+reopen defects 
+
+business impact risk
+architecture risk 

@@ -1,0 +1,4 @@
+key,component,severity,summary,fixed_date
+SWAG-231,payments,critical,Promo code not applied to the order total,2026-08-22
+SWAG-232,payments,blocker,Tax charged on the pre-discount subtotal,2026-08-24
+SWAG-233,checkout,major,Rounding drift on multi-item totals,2026-08-19

@@ -1,0 +1,4 @@
+key,component,summary,changed_date
+REQ-411,payments,Tax must be charged on the discounted subtotal not the list subtotal,2026-08-20
+REQ-412,checkout,Order overview must show item total tax and grand total separately,2026-08-18
+REQ-413,search,Search must match product names case-insensitively and ignore surrounding spaces,2026-08-21

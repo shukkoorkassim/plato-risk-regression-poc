@@ -1,0 +1,10 @@
+key,component,severity,summary,resolved
+SWAG-201,checkout,blocker,Tax applied twice on order overview,2026-08-13
+SWAG-202,checkout,critical,Total mismatch vs item price + tax,2026-08-05
+SWAG-203,checkout,critical,Rounding drift on multi-item orders,2026-07-18
+SWAG-204,checkout,major,Empty-cart checkout not blocked,2026-06-21
+SWAG-205,login,major,Locked-out user reaches inventory,2026-07-30
+SWAG-206,login,minor,Error banner text truncated,2026-05-22
+SWAG-207,cart,major,Badge count wrong after remove,2026-07-06
+SWAG-208,inventory,minor,Price sort unstable for equal prices,2026-05-02
+SWAG-209,search,minor,Search misses uppercase queries,2026-03-12

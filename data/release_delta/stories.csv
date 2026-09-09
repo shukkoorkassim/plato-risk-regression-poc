@@ -1,0 +1,5 @@
+key,component,summary,points
+STORY-311,payments,Add promo-code discounts at checkout (SAUCE10 / SAUCE25),8
+STORY-312,payments,Show the discount line on the order overview,3
+STORY-313,search,Add a product search box to the inventory page,5
+STORY-314,checkout,Show itemised tax on the order overview,2

@@ -1,0 +1,8 @@
+{
+  "tests/test_login.py": "login",
+  "tests/test_inventory.py": "inventory",
+  "tests/test_cart.py": "cart",
+  "tests/test_checkout.py": "checkout",
+  "tests/test_search.py": "search",
+  "tests/test_payments.py": "payments"
+}

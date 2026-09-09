@@ -1,0 +1,6 @@
+anthropic>=0.40
+pytest>=7.0
+# Optional — only needed for the live saucedemo.com browser tests:
+# playwright>=1.40
+# Needed for LIVE Jira (JIRA_LIVE=1) and the seed/ scripts that push to Jira & Confluence:
+requests>=2.31

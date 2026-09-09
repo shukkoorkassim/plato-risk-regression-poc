@@ -1,0 +1,6 @@
+id,component,severity,summary,fixed_date,reopened
+DEF-11,checkout,critical,Discount not reflected in total,2026-08-09,true
+DEF-12,cart,minor,Cart badge flicker on add,2026-04-22,false
+DEF-13,login,high,Session not cleared on logout,2026-08-11,false
+DEF-14,inventory,minor,Image alt text missing,2026-03-23,false
+DEF-15,search,minor,Search box loses focus after typing,2026-03-20,false

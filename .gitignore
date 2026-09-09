@@ -1,0 +1,19 @@
+# Never commit secrets
+.env
+
+# Agent working state (regenerated on every run)
+._agent_state/
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+venv/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# auto-prepared test-fix proposals (T7)
+_proposed_fixes/

@@ -1,0 +1,7 @@
+commit,component,message,date
+aa11bb2,checkout,refactor tax + total calc,2026-08-15
+bb22cc3,checkout,fix rounding on totals,2026-08-07
+cc33dd4,checkout,guard empty cart,2026-07-23
+dd44ee5,login,rework session handling,2026-08-10
+ee55ff6,inventory,tweak sort dropdown,2026-05-12
+ff66aa7,search,adjust query normalisation,2026-03-14

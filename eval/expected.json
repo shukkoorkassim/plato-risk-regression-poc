@@ -1,0 +1,5 @@
+{
+  "_comment": "Fixed evaluation set (Phase 1 · T4). Re-run after any model/workflow/data change to confirm the agent still selects the expected tests. Values are for CSV/default data at threshold 4.0.",
+  "flow1": {"threshold": 4.0, "selected": ["tests/test_checkout.py", "tests/test_login.py"]},
+  "flow2": {"threshold": 4.0, "selected": ["tests/test_checkout.py", "tests/test_payments.py", "tests/test_search.py"]}
+}
