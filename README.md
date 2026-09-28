@@ -54,19 +54,22 @@ It does **not** auto-fix — that's the agent's job.
 ### 2. Full agent — watch it self-heal
 
 ```bash
-python risk_agent.py          # Flow 1 (defect-history driven)
-python change_agent.py        # Flow 2 (change driven)
-
-# or one entry point for everything:
-python run_poc.py --dry-run
-python run_poc.py --flow 1
-python run_poc.py --flow 2
-python run_poc.py --flow both
+python run_poc.py --flow 1    # Flow 1 (defect-history driven)
+python run_poc.py --flow 2    # Flow 2 (change driven)
+python run_poc.py --flow both # both, back to back
+python run_poc.py --dry-run   # no API key needed
 ```
 
 You'll see the Reason → Act → Observe loop, a live token/cost meter, the ranking,
 the selected subset, the failing test, the source fix, and a green re-run. A run
 costs a few cents.
+
+### 2b. Check everything works on this machine
+
+```bash
+python run_poc.py --selftest    # one command: deps, data, live Jira, the lot
+python run_poc.py --showcase    # the whole story in the console, no API key
+```
 
 ### 3. Reset between demos
 
@@ -133,7 +136,7 @@ plato-risk-regression-poc/
 │   ├── common.py                      # shared agent loop + generic tools
 │   ├── flow1_defect_history.py        # Flow 1 tools + risk model
 │   └── flow2_change_driven.py         # Flow 2 tools + impact model
-├── risk_agent.py  change_agent.py  run_poc.py  dry_run.py
+├── run_poc.py  dry_run.py  report.py  demo_selfheal.py   # entry points
 ├── seed/seed_jira.py  seed/seed_confluence.py
 ├── scripts/reset_demo.py  scripts/push_github.sh
 └── docs/DEMO_RUNBOOK.md  docs/POC_MAPPING.md

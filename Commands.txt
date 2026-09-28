@@ -1,27 +1,65 @@
 cd $HOME\Desktop\risk-Agent\plato-risk-regression-poc
 
-python scripts/check_jira.py
-python scripts/check_changes.py
+=== THE THREE YOU ACTUALLY NEED ===
 
-python run_poc.py --report
-python run_poc.py --reset
+python run_poc.py --selftest      check everything on this machine (live Jira included)
+python run_poc.py --showcase      the presentation: 10 phases, offline, ~8 seconds
+python run_poc.py --demo          the live run: real pytest, real Jira defect, 14 sections
+
+    --showcase --pace 1.2         slower, so you can talk over it
+    --showcase --ascii            plain characters for an old console
+    --threshold N                 change the selection cut-off for one run
+
+python run_poc.py --reset         re-plant the bugs, clear learned weights
 
 
-python .\dry_run.py  
+=== ANSWERING QUESTIONS MID-DEMO ===
+
+python run_poc.py --coverage      what has no test / only one test
+python run_poc.py --gates         approval gates + write policy (refuses a write, live)
+python run_poc.py --schedules     pr / daily / sprint / quarterly profiles
+python run_poc.py --status --gaps what is not finished, and why
+python run_poc.py --eval          drift check: expected vs actual selection
+python run_poc.py --check-data    what it is reading from Jira and Confluence
+python run_poc.py --signals       business / sprint / RCA / feedback multipliers
+python run_poc.py --feedback      what past runs taught it
+python run_poc.py --report        both flows: ranked, selected, skipped
+python run_poc.py --verify        run the command behind all 21 requirements
 
 
-JIRA_LIVE  - Is a flag that I can toggle 
+=== THE LIVE LLM AGENTS (need ANTHROPIC_API_KEY) ===
 
-CHANGE_LIVE
+python run_poc.py --flow 1        defect-history agent
+python run_poc.py --flow 2        release-delta agent
+python run_poc.py --flow both
+python run_poc.py --dry-run       the same pipeline with no API key
 
-features: project = KAN AND labels = "release-delta" AND labels = "feature"
-bug-fixes: … AND labels = "bugfix"
+
+=== THE SELECTION CUT-OFF ===
+
+Set in agent/common.py (currently 5.0). Override without editing:
+    set RISK_THRESHOLD=6.0        (or put RISK_THRESHOLD=6.0 in .env)
+    python run_poc.py --showcase --threshold 6
+
+A component is selected when EITHER its risk or its impact reaches the cut-off.
+
+
+=== .env FLAGS ===
+
+JIRA_LIVE=1         read defects from Jira instead of the bundled CSV
+CHANGE_LIVE=1       read this release's features/fixes from Jira
+REPORT_BUGS=1       let --demo file a real Jira defect
+APPROVE_ALL=1       open the approval gates (demo mode); 0 to watch them pause
+
+features:  project = KAN AND labels = "release-delta" AND labels = "feature"
+bug-fixes: project = KAN AND labels = "release-delta" AND labels = "bugfix"
 Each issue's component comes from its labels; type is tagged feature / bugfix.
 
------------------------------------
-history from sprint retrospective 
-open source code 
-reopen defects 
 
-business impact risk
-architecture risk 
+=== STILL OPEN ===
+
+sprint-retrospective history as a real signal   (stand-in data today)
+root-cause notes as a real signal               (stand-in data today)
+business-impact weighting from real usage       (stand-in data today)
+architecture risk on a multi-module repo        (src/ is one module)
+a real human-labelling session to compare against

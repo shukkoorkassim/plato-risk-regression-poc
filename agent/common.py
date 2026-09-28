@@ -61,6 +61,38 @@ def load_dotenv(path=None):
         os.environ.setdefault(k.strip(), v.strip().strip('"').strip("'"))
 
 
+# ---- the selection threshold --------------------------------------------------
+#: THE one place to change the cut-off. A component is selected when its risk
+#: (Flow 1) or impact (Flow 2) reaches this number; everything below it is
+#: skipped with a logged reason.
+#:
+#: Lower it  -> more components qualify -> more tests run -> fewer misses, less saving.
+#: Raise it  -> fewer tests run -> bigger saving, more risk of missing something.
+#:
+#: Override for one run without editing this file:
+#:     Windows : set RISK_THRESHOLD=3.0 && python run_poc.py --showcase
+#:     bash    : RISK_THRESHOLD=3.0 python run_poc.py --showcase
+#: or put RISK_THRESHOLD=3.0 in .env
+#:
+#: The schedule profiles in agent/schedules.py deliberately override this per
+#: cadence (PR 2.0, daily 3.0, sprint 4.0, quarterly 2.0) — a pre-merge check
+#: should be twitchier than a sprint sweep.
+def _read_threshold(default=5.0):
+    load_dotenv()                       # so RISK_THRESHOLD in .env is honoured
+    raw = os.environ.get("RISK_THRESHOLD", "").strip()
+    if not raw:
+        return default
+    try:
+        return float(raw)
+    except ValueError:
+        print(f"{C.YELLOW}RISK_THRESHOLD={raw!r} is not a number — "
+              f"falling back to {default}{C.RESET}")
+        return default
+
+
+THRESHOLD = _read_threshold()
+
+
 # ---- date parsing (shared by both flows) --------------------------------------
 def parse_date(s):
     for fmt in ("%Y-%m-%d", "%Y/%m/%d", "%d-%m-%Y", "%m/%d/%Y", "%Y-%m-%dT%H:%M:%S"):

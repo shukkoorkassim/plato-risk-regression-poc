@@ -24,13 +24,22 @@ def reset():
         sys.exit(1)
     shutil.copyfile(BASELINE, SRC)
     print(f"restored {SRC.relative_to(ROOT)} from baseline (both bugs re-planted)")
+    #: Never cleared. filed_defects.json records Jira issues that really exist;
+    #: deleting the local note does not delete the ticket, it just makes the log
+    #: silently wrong — and --showcase reads it for the live defect link.
+    KEEP = {"filed_defects.json"}
+
     if STATE.exists():
         n = 0
         for f in STATE.glob("*.json"):
+            if f.name in KEEP:
+                continue
             f.unlink()
             n += 1
         print(f"cleared {n} agent-state file(s) in {STATE.relative_to(ROOT)}/")
-    print("Ready for a fresh demo. Try:  python dry_run.py")
+        if (STATE / "filed_defects.json").exists():
+            print("kept filed_defects.json — those Jira issues are real")
+    print("Ready for a fresh demo. Try:  python run_poc.py --showcase")
 
 
 if __name__ == "__main__":

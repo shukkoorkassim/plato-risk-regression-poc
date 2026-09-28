@@ -1,0 +1,37 @@
+{
+  "_comment": "PLACEHOLDER LABELS — not a real labelling session (Phase 2 · item 9). These stand in for what a QA engineer would pick given only the change description, so the comparison is runnable today. Replace before quoting any human-vs-agent number externally: show a QA engineer the bug_id, component, classes_modified and kind columns of benchmark/ground_truth.csv WITHOUT tests_trigger, ask which test files they would run, and paste the answers here. The picks below deliberately follow the module-name convention, because that is what a person reading a diff actually does.",
+  "labelled_by": "placeholder (illustrative, not a real session)",
+  "labelled_on": "not yet run",
+  "project": "networkx 3.6.1",
+  "selections": {
+    "NX-1": [
+      "networkx/classes/tests/test_function.py"
+    ],
+    "NX-5": [
+      "networkx/classes/tests/test_graph.py",
+      "networkx/classes/tests/test_digraph.py",
+      "networkx/classes/tests/test_function.py"
+    ],
+    "NX-6": [
+      "networkx/classes/tests/test_digraph.py",
+      "networkx/classes/tests/test_reportviews.py"
+    ],
+    "NX-8": [
+      "networkx/utils/tests/test_misc.py",
+      "networkx/generators/tests/test_classic.py"
+    ],
+    "NX-9": [
+      "networkx/utils/tests/test_unionfind.py"
+    ],
+    "NX-10": [
+      "networkx/generators/tests/test_classic.py"
+    ],
+    "NX-14": [
+      "networkx/linalg/tests/test_laplacian.py",
+      "networkx/linalg/tests/test_spectrum.py"
+    ],
+    "NX-16": [
+      "networkx/tests/test_convert.py"
+    ]
+  }
+}

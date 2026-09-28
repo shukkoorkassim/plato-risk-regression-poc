@@ -48,14 +48,14 @@ Shows, per flow: RANKED → SELECTED → FILTERED → EXECUTED, then a compariso
 
 ## 4 · Flow 1 self-heals (live Jira)
 ```
-python risk_agent.py
+python run_poc.py --flow 1
 ```
 Step 1 says `jira (live): 9`. It picks checkout+login → runs → checkout fails → reads `src/swaglabs.py` → fixes the double-tax → re-runs → green → summary.
 
 ## 5 · Flow 2 self-heals (live Jira + Confluence)
 ```
 python run_poc.py --reset
-python change_agent.py
+python run_poc.py --flow 2
 ```
 Step 1 says `feature: 4 (jira (live))`, `requirement: 3 (confluence (live))`. Picks payments+checkout+search → fixes the promo bug → green (search passes — it changed, we re-tested it, it's fine).
 
@@ -89,5 +89,5 @@ python run_poc.py --reset
 | Combined report | `python run_poc.py --report` |
 | No-key pipeline | `python dry_run.py` |
 | Full self-heal demo (no key) | `python run_poc.py --demo` |
-| Flow 1 self-heal | `python risk_agent.py` |
-| Flow 2 self-heal | `python change_agent.py` |
+| Flow 1 self-heal | `python run_poc.py --flow 1` |
+| Flow 2 self-heal | `python run_poc.py --flow 2` |

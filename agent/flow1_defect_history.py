@@ -16,11 +16,13 @@ import json
 from collections import defaultdict
 from datetime import datetime, timedelta
 
+from .console import tier_of
 from .common import (
-    DATA, TESTS, STATE, parse_date, GENERIC_TOOLS, GENERIC_IMPL, run_agent, efficiency_line,
+    DATA, TESTS, STATE, THRESHOLD, parse_date, run_agent, efficiency_line,
 )
 from .jira_source import use_live_jira, load_jira_live
 from .jira_report import report_bug_to_jira, REPORT_TOOL
+from .guarded_tools import GUARDED_TOOLS as GENERIC_TOOLS, GUARDED_IMPL as GENERIC_IMPL
 
 LOOKBACK_DAYS = 180
 SEVERITY_WEIGHT = {
@@ -152,25 +154,49 @@ def score_risk():
             a["worst"] = max(a["worst"], w)
             if reop:
                 a["reopened"] += 1
+    # Phase 3 signals (items 12, 14, 15): bounded multipliers on top of the
+    # defect evidence. Announce=False here — score_risk is called inside the
+    # agent loop and inside eval, so the placeholder warnings are printed once
+    # by --signals / --demo rather than on every scoring call.
+    from .signals import combined_multipliers, explain as explain_signals
+    signals = combined_multipliers(announce=False)
+
     all_comps = set(agg) | set(list_test_suite().values())
     ranked = []
     for comp in all_comps:
         a = agg[comp]
-        risk = a["score"] * (1 + min(1.0, a["churn"] / 10.0))
-        ranked.append((comp, risk, a))
+        base = a["score"] * (1 + min(1.0, a["churn"] / 10.0))
+        sig = signals["combined"].get(comp, 1.0)
+        ranked.append((comp, base * sig, a, base, sig))
     ranked.sort(key=lambda x: (-x[1], x[0]))
-    (STATE / "risk.json").write_text(json.dumps([{"component": c, "risk": round(r, 2)} for c, r, _ in ranked]))
-    lines = ["Risk-ranked   risk = score[sum severity x recency] x (1 + churn/10):"]
-    for comp, risk, a in ranked:
-        tier = "HIGH" if risk >= 8 else "MED" if risk >= 3 else "LOW"
+    (STATE / "risk.json").write_text(json.dumps(
+        # Stored at full precision on purpose. Rounding to 2dp here and then
+        # formatting to 1dp elsewhere rounds twice: 6.9499 -> 6.95 -> "7.0",
+        # while the line that prints the raw value says "6.9". One number, two
+        # spellings, on the same screen.
+        [{"component": c, "risk": r} for c, r, _, _, _ in ranked]))
+
+    any_sig = any(abs(s - 1.0) > 0.001 for *_, s in ranked)
+    header = ("Risk-ranked   risk = score[sum severity x recency] x (1 + churn/10)"
+              + (" x business/sprint/rca/feedback:" if any_sig else ":"))
+    lines = [header]
+    for comp, risk, a, base, sig in ranked:
+        # MED starts at the selection cut-off, so the label and the decision
+        # agree: MED or better is always run, LOW is always skipped.
+        tier = tier_of(risk, THRESHOLD)[0].upper()
         mult = 1 + min(1.0, a["churn"] / 10.0)
+        tail = ""
+        if abs(sig - 1.0) > 0.001:
+            why = explain_signals(comp, signals)
+            tail = f" x {sig:.2f} [{why}]"
         lines.append(
             f"  [{tier:4}] {comp:12} {a['count']}d sev{a['worst']:.0f} churn{a['churn']} reopen{a['reopened']}   "
-            f"score {a['score']:.1f} x (1 + {a['churn']}/10)={mult:.2f} = risk {risk:.1f}")
+            f"score {a['score']:.1f} x (1 + {a['churn']}/10)={mult:.2f}{tail} = risk {risk:.1f}")
     return "\n".join(lines)
 
 
-def select_regression_tests(threshold=4.0):
+def select_regression_tests(threshold=None):
+    threshold = THRESHOLD if threshold is None else float(threshold)
     rf = STATE / "risk.json"
     if not rf.exists():
         return "ERROR: run score_risk first."
@@ -202,7 +228,7 @@ TOOLS = [
     {"name": "read_defect_sources", "description": "Pull and normalize defects from all sources (Jira export, defect CSV, git churn), filtered to the recent lookback window. Call first.", "input_schema": {"type": "object", "properties": {}}},
     {"name": "summarize_defects", "description": "Group loaded defects by component/feature: what broke and where.", "input_schema": {"type": "object", "properties": {}}},
     {"name": "score_risk", "description": "Rank components by risk = severity x count x recency x (1 + churn).", "input_schema": {"type": "object", "properties": {}}},
-    {"name": "select_regression_tests", "description": "Select the regression tests covering high-risk components. Optional threshold (default 4.0).", "input_schema": {"type": "object", "properties": {"threshold": {"type": "number"}}}},
+    {"name": "select_regression_tests", "description": f"Select the regression tests covering high-risk components. Optional threshold (default {THRESHOLD:.1f}).", "input_schema": {"type": "object", "properties": {"threshold": {"type": "number"}}}},
     REPORT_TOOL,
 ] + GENERIC_TOOLS
 

@@ -1,0 +1,7 @@
+component,criticality,monthly_sessions,revenue_share_pct,source
+checkout,critical,48000,41.0,PLACEHOLDER
+payments,critical,44500,38.0,PLACEHOLDER
+cart,high,52000,12.0,PLACEHOLDER
+login,high,61000,4.0,PLACEHOLDER
+search,medium,29000,3.0,PLACEHOLDER
+inventory,low,18000,2.0,PLACEHOLDER

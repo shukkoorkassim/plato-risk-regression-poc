@@ -4,7 +4,7 @@ dry_run.py — see BOTH pipelines WITHOUT an Anthropic API key.
 This calls the same deterministic tools the agents use (read -> summarize ->
 score -> select -> run) directly, so you can verify each flow's selection and
 watch the planted bug fail. It does NOT auto-fix the bugs — that self-healing
-step is what the real agents (risk_agent.py / change_agent.py) do with the LLM.
+step is what the real agents (run_poc.py --flow 1 / --flow 2) do with the LLM.
 
     python dry_run.py            # both flows
     python dry_run.py 1          # Flow 1 only
@@ -35,7 +35,7 @@ def dry_flow1():
     show("4. select_regression_tests", flow1.select_regression_tests())
     show("5. run_pytest (selected subset only)", run_pytest())
     print("\n  ^ checkout SHOULD fail — the planted tax bug in src/swaglabs.py.")
-    print("    Run  python risk_agent.py  with an API key to watch the agent fix it.")
+    print("    Run  python run_poc.py --flow 1  with an API key to watch the agent fix it.")
 
 
 def dry_flow2():
@@ -46,7 +46,7 @@ def dry_flow2():
     show("4. select_change_tests", flow2.select_change_tests())
     show("5. run_pytest (selected subset only)", run_pytest())
     print("\n  ^ payments SHOULD fail — the planted promo/tax bug in src/swaglabs.py.")
-    print("    Run  python change_agent.py  with an API key to watch the agent fix it.")
+    print("    Run  python run_poc.py --flow 2  with an API key to watch the agent fix it.")
 
 
 if __name__ == "__main__":
@@ -58,4 +58,4 @@ if __name__ == "__main__":
     else:
         dry_flow1()
         dry_flow2()
-    print(f"\n{BAR}\n Done. The agents (risk_agent.py / change_agent.py) add the self-heal step.\n{BAR}")
+    print(f"\n{BAR}\n Done. The live agents (--flow 1 / --flow 2) add the self-heal step.\n{BAR}")

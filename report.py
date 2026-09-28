@@ -17,15 +17,15 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from agent.common import STATE, TESTS, run_pytest, C, efficiency_line   # noqa: E402
+from agent.common import STATE, TESTS, THRESHOLD, run_pytest, C, efficiency_line   # noqa: E402
 from agent.data_quality import check_data_quality                       # noqa: E402
 from agent import approvals                                             # noqa: E402
 from agent import flow1_defect_history as f1                            # noqa: E402
 from agent import flow2_change_driven as f2                             # noqa: E402
 
 BAR = "=" * 70
-F1_THRESHOLD = 4.0
-F2_THRESHOLD = 4.0
+F1_THRESHOLD = THRESHOLD
+F2_THRESHOLD = THRESHOLD
 
 
 def _suite():

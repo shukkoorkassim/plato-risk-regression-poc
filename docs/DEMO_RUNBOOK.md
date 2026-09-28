@@ -38,7 +38,7 @@ Talk track:
 Now the self-heal:
 
 ```bash
-python risk_agent.py
+python run_poc.py --flow 1
 ```
 
 "The agent reads `src/swaglabs.py`, finds the double-tax line, fixes it — *not*
@@ -67,7 +67,7 @@ Talk track:
 Self-heal:
 
 ```bash
-python change_agent.py
+python run_poc.py --flow 2
 ```
 
 "Same agent, same self-heal — this time on the changed area."

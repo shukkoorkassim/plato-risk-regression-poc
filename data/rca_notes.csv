@@ -1,0 +1,6 @@
+defect_id,component,root_cause,systemic,note,source
+DEF-11,checkout,calculation-logic,true,Tax and discount order applied inconsistently across paths,PLACEHOLDER
+DEF-13,login,state-management,false,Session cache not cleared on logout,PLACEHOLDER
+FIX-902,payments,integration-contract,true,Promo service contract changed without version bump,PLACEHOLDER
+DEF-12,cart,ui-timing,false,Badge re-render race,PLACEHOLDER
+FIX-903,payments,calculation-logic,true,Rounding applied at the wrong layer,PLACEHOLDER

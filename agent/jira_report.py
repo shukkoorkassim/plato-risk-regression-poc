@@ -21,7 +21,44 @@ Environment:
 
 import os
 
-from .common import load_dotenv
+from .common import load_dotenv, STATE
+
+
+#: Every defect the agent files is recorded here, so a later run can show the
+#: real Jira link without going back to the network. --showcase reads it.
+FILED = STATE / "filed_defects.json"
+
+
+def _record_filed(key, url, component, summary):
+    """Append one filed defect to the local log. Never fatal: a logging problem
+    must not turn a successfully-filed defect into a reported failure."""
+    try:
+        import json
+        from datetime import datetime
+        rows = json.loads(FILED.read_text()) if FILED.exists() else []
+        rows.append({"key": key, "url": url, "component": component,
+                     "summary": summary, "when": datetime.now().isoformat(timespec="seconds")})
+        FILED.write_text(json.dumps(rows, indent=2))
+    except Exception:  # noqa: BLE001
+        pass
+
+
+def last_filed(component=None):
+    """The most recent defect filed (optionally for one component), or None."""
+    try:
+        import json
+        rows = json.loads(FILED.read_text()) if FILED.exists() else []
+    except Exception:  # noqa: BLE001
+        return None
+    if component:
+        rows = [r for r in rows if r.get("component") == component]
+    return rows[-1] if rows else None
+
+
+def browse_url(key):
+    """The Jira URL for an issue key, from config alone — no network call."""
+    site = _cfg()["site"]
+    return f"https://{site}/browse/{key}" if site else None
 
 
 def report_enabled():
@@ -125,7 +162,9 @@ def report_defect_to_jira(component, summary, details="", severity="major"):
         key = r.json().get("key")
         _transition_to_todo(base, auth, key)
         who = c["assignee"] if account_id else "unassigned"
-        return f"Filed Jira DEFECT {key} for the {component} bug and assigned to {who}. {base}/browse/{key}"
+        url = f"{base}/browse/{key}"
+        _record_filed(key, url, component, summary)
+        return f"Filed Jira DEFECT {key} for the {component} bug and assigned to {who}. {url}"
     except Exception as e:  # noqa: BLE001
         return f"Failed to file defect: {e}"
 

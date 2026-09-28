@@ -1,0 +1,8 @@
+sprint,component,carried_over,spillover_days,reopened_in_sprint,source
+2026-S18,checkout,2,4,1,PLACEHOLDER
+2026-S18,payments,1,2,0,PLACEHOLDER
+2026-S19,checkout,3,6,2,PLACEHOLDER
+2026-S19,search,1,1,0,PLACEHOLDER
+2026-S20,payments,2,3,1,PLACEHOLDER
+2026-S20,checkout,1,2,0,PLACEHOLDER
+2026-S20,cart,0,0,0,PLACEHOLDER

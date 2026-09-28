@@ -1,0 +1,40 @@
+{
+  "declared": {
+    "strategy": "declared",
+    "bugs_total": 16,
+    "bugs_scored": 13,
+    "bugs_undetectable": [
+      "NX-11",
+      "NX-13"
+    ],
+    "bugs_hung": [
+      "NX-4"
+    ],
+    "recall": 0.45634112619406736,
+    "precision": 0.8461538461538461,
+    "f1": 0.4958196347190655,
+    "agreement": 0.38461538461538464,
+    "avg_selected": 0.8461538461538461,
+    "suite_size": 67,
+    "reduction": 0.9873708381171068
+  },
+  "impact": {
+    "strategy": "impact",
+    "bugs_total": 16,
+    "bugs_scored": 13,
+    "bugs_undetectable": [
+      "NX-11",
+      "NX-13"
+    ],
+    "bugs_hung": [
+      "NX-4"
+    ],
+    "recall": 1.0,
+    "precision": 0.29649121421371954,
+    "f1": 0.36675907661869517,
+    "agreement": 1.0,
+    "avg_selected": 35.76923076923077,
+    "suite_size": 67,
+    "reduction": 0.46613088404133185
+  }
+}

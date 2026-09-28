@@ -1,19 +1,39 @@
-# Never commit secrets
+# ---- Never commit secrets ----------------------------------------------------
+# Any .env variant, plus the demo credential template. These hold Atlassian
+# tokens and API keys, and this repo is public.
 .env
+.env.*
+!.env.example
+env-template-demo.txt
+*-credentials.txt
+*.pem
 
-# Agent working state (regenerated on every run)
+# ---- Agent working state (regenerated on every run) --------------------------
 ._agent_state/
 
-# Python
+# ---- Auto-prepared test-fix proposals (T7) -----------------------------------
+_proposed_fixes/
+
+# ---- Benchmark / scratch -----------------------------------------------------
+.cache/
+*.orig
+*.bak
+
+# ---- Python ------------------------------------------------------------------
 __pycache__/
 *.pyc
+*.pyo
 .pytest_cache/
 .venv/
 venv/
+*.egg-info/
 
-# OS
+# ---- Editors / OS ------------------------------------------------------------
 .DS_Store
 Thumbs.db
+.idea/
+.vscode/
+~$*
 
-# auto-prepared test-fix proposals (T7)
-_proposed_fixes/
+# ---- Files staged for manual deletion ----------------------------------------
+_to_delete/

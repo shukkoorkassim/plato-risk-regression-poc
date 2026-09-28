@@ -17,12 +17,14 @@ import csv
 import json
 from collections import defaultdict
 
+from .console import tier_of
 from .common import (
-    DATA, TESTS, STATE, GENERIC_TOOLS, GENERIC_IMPL, run_agent, efficiency_line,
+    DATA, TESTS, STATE, THRESHOLD, run_agent, efficiency_line,
 )
 from .change_source import use_live_changes, load_features_live, load_bugfixes_live
 from .confluence_source import confluence_configured, load_requirements_live
 from .jira_report import report_bug_to_jira, REPORT_TOOL
+from .guarded_tools import GUARDED_TOOLS as GENERIC_TOOLS, GUARDED_IMPL as GENERIC_IMPL
 
 DELTA = DATA / "release_delta"
 
@@ -153,28 +155,49 @@ def score_impact():
         a = agg[ch["component"]]
         a[ch["type"]] += 1
         a["score"] += CHANGE_WEIGHT.get(ch["type"], 1.0)
+    # Phase 3 signals (items 12, 14, 15) — same bounded multipliers as flow 1, so
+    # a business-critical component that changed outranks an equally-changed
+    # low-usage one.
+    from .signals import combined_multipliers, explain as explain_signals
+    signals = combined_multipliers(announce=False)
+
     all_comps = set(agg) | set(churn) | set(list_test_suite().values())
     ranked = []
     for comp in all_comps:
         a = agg[comp]
         c = churn.get(comp, 0)
-        impact = a["score"] * (1 + min(1.0, c / 8.0))
-        ranked.append((comp, impact, a, c))
+        base = a["score"] * (1 + min(1.0, c / 8.0))
+        sig = signals["combined"].get(comp, 1.0)
+        ranked.append((comp, base * sig, a, c, sig))
     ranked.sort(key=lambda x: (-x[1], x[0]))
-    (STATE / "impact.json").write_text(json.dumps([{"component": c, "impact": round(i, 2)} for c, i, _, _ in ranked]))
-    lines = ["Impact-ranked components   impact = (2*feat + 2*fix + 3*req) x (1 + churn):"]
-    for comp, impact, a, c in ranked:
-        tier = "HIGH" if impact >= 8 else "MED" if impact >= 3 else "LOW"
+    (STATE / "impact.json").write_text(json.dumps(
+        # Stored at full precision on purpose. Rounding to 2dp here and then
+        # formatting to 1dp elsewhere rounds twice: 6.9499 -> 6.95 -> "7.0",
+        # while the line that prints the raw value says "6.9". One number, two
+        # spellings, on the same screen.
+        [{"component": c, "impact": i} for c, i, _, _, _ in ranked]))
+
+    any_sig = any(abs(s - 1.0) > 0.001 for *_, s in ranked)
+    lines = ["Impact-ranked components   impact = (2*feat + 2*fix + 3*req) x (1 + churn)"
+             + (" x business/sprint/rca/feedback:" if any_sig else ":")]
+    for comp, impact, a, c, sig in ranked:
+        # MED starts at the selection cut-off, so the label and the decision
+        # agree: MED or better is always run, LOW is always skipped.
+        tier = tier_of(impact, THRESHOLD)[0].upper()
         weighted = a["score"]                       # 2*feat + 2*fix + 3*req
         mult = 1 + min(1.0, c / 8.0)                # churn multiplier (capped at 2.0)
+        tail = ""
+        if abs(sig - 1.0) > 0.001:
+            tail = f" x {sig:.2f} [{explain_signals(comp, signals)}]"
         lines.append(
             f"  [{tier:4}] {comp:12} {a['feature']}f {a['bugfix']}x {a['requirement']}r churn{c}   "
-            f"(2*{a['feature']}+2*{a['bugfix']}+3*{a['requirement']})={weighted:.0f} x (1+{c}/8)={mult:.2f} = impact {impact:.1f}")
+            f"(2*{a['feature']}+2*{a['bugfix']}+3*{a['requirement']})={weighted:.0f} x (1+{c}/8)={mult:.2f}{tail} = impact {impact:.1f}")
     return "\n".join(lines)
 
 
-def select_change_tests(threshold=4.0):
+def select_change_tests(threshold=None):
     """Select the tests covering the most-changed components."""
+    threshold = THRESHOLD if threshold is None else float(threshold)
     imf = STATE / "impact.json"
     if not imf.exists():
         return "ERROR: run score_impact first."
@@ -206,7 +229,7 @@ TOOLS = [
     {"name": "read_release_delta", "description": "Read this release's changes — new user stories/features, bug fixes, requirement changes — plus the code churn. Call first.", "input_schema": {"type": "object", "properties": {}}},
     {"name": "summarize_changes", "description": "Group the changes by component: what changed, and where each change came from.", "input_schema": {"type": "object", "properties": {}}},
     {"name": "score_impact", "description": "Rank components by impact = weighted change count x (1 + churn).", "input_schema": {"type": "object", "properties": {}}},
-    {"name": "select_change_tests", "description": "Select the regression tests covering the most-changed components. Optional threshold (default 4.0).", "input_schema": {"type": "object", "properties": {"threshold": {"type": "number"}}}},
+    {"name": "select_change_tests", "description": f"Select the regression tests covering the most-changed components. Optional threshold (default {THRESHOLD:.1f}).", "input_schema": {"type": "object", "properties": {"threshold": {"type": "number"}}}},
     REPORT_TOOL,
 ] + GENERIC_TOOLS
 
